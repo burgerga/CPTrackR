@@ -1,0 +1,101 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# CPTraceR
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of CPTraceR is to add unique track ids to CellProfiler tracking output.
+
+## Installation
+
+You can install the development version of CPTraceR with:
+
+``` r
+remotes::install_github("burgerga/CPTraceR")
+```
+
+## Example
+
+Assuming `data` contains some data from a CellProfiler tsv:
+
+```{r, echo=F, message = FALSE}
+library(tidyverse)
+data <-  read_tsv(file.path("~/Downloads","20190925_BrittData_singleCell_1hrDelay_withoutT01.txt"))
+```
+
+The original data:
+
+```{r}
+library(tidyverse)
+data_select <- data %>%
+  select(groupNumber, 
+         groupInd, 
+         par_obj_num = Nuclei_TrackObjects_ParentObjectNumber_30, 
+         obj_num     = Nuclei_Number_Object_Number)
+# example output from the first group
+data_select %>% 
+  filter(groupNumber == 1) %>%
+  arrange(obj_num, groupInd)
+```
+
+Let's fix the output:
+
+```{r}
+library(CPTraceR)
+library(progressr) #enable progress bars
+with_progress({
+  fixed <- createLUTGroup(data_select %>% filter(groupNumber == 1) %>% select(-groupNumber)) 
+})
+fixed %>% 
+  arrange(obj_num, groupInd)
+```
+
+Three new columns are added:
+
+* `cid`: id of the original cell (daughter cells share `cid` with parent)
+* `uid`: unique id (daughter cells don't share `uid` with parent)
+* `alt_obj_num`: character id of cells that show lineage with suffixes
+
+```{r}
+fixed %>% 
+  filter(groupInd == 2) %>%
+  arrange(obj_num, groupInd)
+```
+
+Now run everything sequentially:
+
+```{r}
+library(tictoc)
+tic()
+with_progress({
+  createLUT(data_select) 
+})
+toc()
+```
+
+Now run everything in parallel:
+
+```{r}
+library(tictoc)
+library(future)
+plan(multisession)
+tic()
+with_progress({
+  createLUT(data_select) 
+})
+toc()
+```
