@@ -10,7 +10,7 @@ Authors@R:
       person(given = "Muriel",
              family = "Heldring",
              role = c("aut"),
-             email = "murielheldring@gmail.com"
+             email = "murielheldring@gmail.com",
              comment = c(ORCID = "0000-0002-3565-7227")),
       person(given = "Steven", 
              family = "Wink", 
