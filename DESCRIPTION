@@ -16,7 +16,7 @@ Authors@R:
              family = "Wink", 
              role = c("aut"),
              email = "hardervidertsie@gmail.com",
-             comment = c(ORCID = "0000-0003-1189-7231"))
+             comment = c(ORCID = "0000-0003-1189-7231")))
 Description: Create unique track identifiers for CellProfiler tracking output.
 License: MIT + file LICENSE
 Encoding: UTF-8
