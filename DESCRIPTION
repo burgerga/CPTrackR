@@ -1,6 +1,6 @@
 Package: CPTraceR
 Title: Create unique track identifiers for CellProfiler tracking output
-Version: 0.0.0.9000
+Version: 0.1.0.9000
 Authors@R: 
     c(person(given = "Gerhard",
              family = "Burger",
@@ -22,7 +22,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Imports: 
     furrr,
     dplyr,

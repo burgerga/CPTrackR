@@ -4,11 +4,42 @@
 \alias{createLUT}
 \title{Fix the track ids for multiple group}
 \usage{
-createLUT(data)
+createLUT(data, group_vars, frame_var, obj_var, par_obj_var)
 }
 \arguments{
-\item{data}{The dataframe with groupNumber, groupInd, par_obj_num, obj_num}
+\item{data}{The data frame with cellprofiler data}
+
+\item{group_vars}{The variable(s) which make up the movies for which the tracks should be fixed.
+Most commonly 'groupNumber' but can also include plate id.}
+
+\item{frame_var}{The variable which identifies separate frames in the group. Most commonly 'groupId'.}
+
+\item{obj_var}{The variable with the object number, for example, 'Nuclei_Number_Object_Number'}
+
+\item{par_obj_var}{The variable indicating the parent object number in the previous time frame,
+for example 'Nuclei_TrackObjects_ParentObjectNumber_30'}
 }
 \description{
-Optionally in parallel. (doesn't handle plate ID or other column names yet)
+,
+}
+\details{
+Optionally in parallel.
+}
+\examples{
+\dontrun{
+createLUT(data,
+          group_vars = groupNumber,
+          frame_var = groupInd,
+          obj_var = Nuclei_Number_Object_Number,
+          par_obj_var = Nuclei_TrackObjects_ParentObjectNumber_30)
+
+with_progress({
+lut <- createLUT(data,
+                 group_vars = groupNumber,
+                 frame_var = groupInd,
+                 obj_var = Nuclei_Number_Object_Number,
+                 par_obj_var = Nuclei_TrackObjects_ParentObjectNumber_30)
+})
+}
+
 }

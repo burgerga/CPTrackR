@@ -8,6 +8,9 @@ test_that("split tracks get suffix", {
     2, 1, 1,
     2, 1, 2
   )
-  expect_equal(createLUTGroup(data)$alt_obj_num,
+  expect_equal(createLUTGroup(data,
+                              frame_var = groupInd,
+                              obj_var = obj_num,
+                              par_obj_var = par_obj_num)$alt_uid,
                c('1', '1.1', '1.2'))
 })
