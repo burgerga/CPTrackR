@@ -28,26 +28,33 @@ You can install the development version of CPTraceR with:
 remotes::install_github("burgerga/CPTraceR")
 ```
 
-## Examples
+## Usage
+
+### Creating a lookup table (LUT)
 
 Assuming `data` contains some data from a CellProfiler tsv:
 
-```{r, echo=F, message = FALSE}
+```{r, echo=F, message = FALSE, warning=FALSE}
 library(tidyverse)
+
+library(future)
+plan(multisession)
+
 data <-  read_tsv(file.path("~/../../Downloads","20190925_BrittData_singleCell_1hrDelay_withoutT01.txt"))
-data <- data %>%
-  select(groupNumber, 
-         groupInd, 
-         Nuclei_TrackObjects_ParentObjectNumber_30, 
-         Nuclei_Number_Object_Number,
-         Nuclei_Intensity_MeanIntensity_image_green)
+
+theme_set(theme_classic(base_size = 13))
 ```
 
 Show some example uncorrected data:
 
 ```{r}
 library(tidyverse)
-data
+data %>%
+  select(groupNumber, 
+         groupInd, 
+         Nuclei_TrackObjects_ParentObjectNumber_30, 
+         Nuclei_Number_Object_Number,
+         Nuclei_Intensity_MeanIntensity_image_green)
 ```
 
 We can create a lookup table (LUT) for a single group using `createLUTGroup`:
@@ -90,7 +97,7 @@ lut %>%
 ```
 
 
-We can create a LUT for multiple groups (=movies) using `createLut`, the `group_vars` are used to denote the different groups:
+We can create a LUT for multiple groups (=movies) using `createLut`, the `group_vars` are used to denote the different groups (can be multiple columns):
 
 ```{r}
 with_progress({
@@ -106,20 +113,42 @@ lut_all
 Now we can join the LUT to the original data
 
 ```{r}
-data %>% 
-  left_join(lut_all) %>%
+fixed <- data %>% 
+  left_join(lut_all) 
+fixed %>%
   select(groupNumber, groupInd, uid, alt_uid, Nuclei_Intensity_MeanIntensity_image_green)
 ```
 
-### Parallelisation
+#### Parallelisation
 
 We can also enable parallelisation using the `future` package and specifying a `plan`, this will give a considerable speed improvement if you have many movies:
 
-```{r}
+```{r, eval = F}
 library(future)
 plan(multisession)
 with_progress({
-  lut_all <- createLUT(data, group_vars = groupNumber, frame_var = groupInd, obj_var = Nuclei_Number_Object_Number, par_obj_var = Nuclei_TrackObjects_ParentObjectNumber_30) 
+  lut_all <- createLUT(data, 
+                       group_vars = groupNumber, 
+                       frame_var = groupInd, 
+                       obj_var = Nuclei_Number_Object_Number, 
+                       par_obj_var = Nuclei_TrackObjects_ParentObjectNumber_30) 
 })
 lut_all
+```
+
+```{r, echo = F}
+lut_all
+```
+
+### Plotting
+
+With our `uid` per cell we can now plot the tracks:
+
+```{r}
+ggplot(fixed %>% filter(groupNumber == 1), 
+       aes(Nuclei_Location_Center_X, Nuclei_Location_Center_Y, 
+           group = uid, color = as.factor(uid))) + 
+  geom_path() + 
+  guides(color = F) +
+  coord_fixed()
 ```

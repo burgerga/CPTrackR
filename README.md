@@ -18,7 +18,9 @@ You can install the development version of CPTraceR with:
 remotes::install_github("burgerga/CPTraceR")
 ```
 
-## Examples
+## Usage
+
+### Creating a lookup table (LUT)
 
 Assuming `data` contains some data from a CellProfiler tsv:
 
@@ -26,7 +28,12 @@ Show some example uncorrected data:
 
 ``` r
 library(tidyverse)
-data
+data %>%
+  select(groupNumber, 
+         groupInd, 
+         Nuclei_TrackObjects_ParentObjectNumber_30, 
+         Nuclei_Number_Object_Number,
+         Nuclei_Intensity_MeanIntensity_image_green)
 #> # A tibble: 370,598 x 5
 #>    groupNumber groupInd Nuclei_TrackObject~ Nuclei_Number_Ob~ Nuclei_Intensity_~
 #>          <dbl>    <dbl>               <dbl>             <dbl>              <dbl>
@@ -61,12 +68,12 @@ lut %>%
 #>  2        2                           1     1     1 1      
 #>  3        3                           1     1     1 1      
 #>  4        4                           1     1     1 1      
-#>  5        5                           1   271   305 271    
+#>  5        5                           1   271   344 271    
 #>  6        6                           1     1     1 1      
-#>  7        7                           1   315   361 315    
-#>  8        8                           1   252   286 252    
-#>  9        9                           1   252   286 252    
-#> 10       10                           1   252   286 252    
+#>  7        7                           1   315   444 315    
+#>  8        8                           1   252   311 252    
+#>  9        9                           1   252   311 252    
+#> 10       10                           1   252   311 252    
 #> # ... with 10,294 more rows
 ```
 
@@ -88,11 +95,11 @@ lut %>%
 #>    groupInd Nuclei_Number_Object_Number   cid   uid alt_uid
 #>       <dbl>                       <dbl> <dbl> <dbl> <chr>  
 #>  1        2                           1     1     1 1      
-#>  2        2                           2     3   226 3.1    
-#>  3        2                           3     3   227 3.2    
+#>  2        2                           2     3   240 3.1    
+#>  3        2                           3     3   241 3.2    
 #>  4        2                           4     5     5 5      
 #>  5        2                           5     6     6 6      
-#>  6        2                           6    14   228 14.1   
+#>  6        2                           6    14   242 14.1   
 #>  7        2                           7     9     9 9      
 #>  8        2                           8    10    10 10     
 #>  9        2                           9    11    11 11     
@@ -120,17 +127,18 @@ lut %>%
 #>  2        2                           1     1     1 1      
 #>  3        3                           1     1     1 1      
 #>  4        4                           1     1     1 1      
-#>  5        5                           1   271   305 271    
+#>  5        5                           1   271   344 271    
 #>  6        6                           1     1     1 1      
-#>  7        7                           1   315   361 315    
-#>  8        8                           1   252   286 252    
-#>  9        9                           1   252   286 252    
-#> 10       10                           1   252   286 252    
+#>  7        7                           1   315   444 315    
+#>  8        8                           1   252   311 252    
+#>  9        9                           1   252   311 252    
+#> 10       10                           1   252   311 252    
 #> # ... with 10,294 more rows
 ```
 
 We can create a LUT for multiple groups (=movies) using `createLut`, the
-`group_vars` are used to denote the different groups:
+`group_vars` are used to denote the different groups (can be multiple
+columns):
 
 ``` r
 with_progress({
@@ -160,10 +168,11 @@ lut_all
 Now we can join the LUT to the original data
 
 ``` r
-data %>% 
-  left_join(lut_all) %>%
+fixed <- data %>% 
+  left_join(lut_all) 
+#> Joining, by = c("groupInd", "groupNumber", "Nuclei_Number_Object_Number")
+fixed %>%
   select(groupNumber, groupInd, uid, alt_uid, Nuclei_Intensity_MeanIntensity_image_green)
-#> Joining, by = c("groupNumber", "groupInd", "Nuclei_Number_Object_Number")
 #> # A tibble: 370,598 x 5
 #>    groupNumber groupInd   uid alt_uid Nuclei_Intensity_MeanIntensity_image_green
 #>          <dbl>    <dbl> <dbl> <chr>                                        <dbl>
@@ -180,7 +189,7 @@ data %>%
 #> # ... with 370,588 more rows
 ```
 
-### Parallelisation
+#### Parallelisation
 
 We can also enable parallelisation using the `future` package and
 specifying a `plan`, this will give a considerable speed improvement if
@@ -190,21 +199,41 @@ you have many movies:
 library(future)
 plan(multisession)
 with_progress({
-  lut_all <- createLUT(data, group_vars = groupNumber, frame_var = groupInd, obj_var = Nuclei_Number_Object_Number, par_obj_var = Nuclei_TrackObjects_ParentObjectNumber_30) 
+  lut_all <- createLUT(data, 
+                       group_vars = groupNumber, 
+                       frame_var = groupInd, 
+                       obj_var = Nuclei_Number_Object_Number, 
+                       par_obj_var = Nuclei_TrackObjects_ParentObjectNumber_30) 
 })
 lut_all
-#> # A tibble: 370,598 x 6
-#>    groupNumber groupInd Nuclei_Number_Object_Number   cid   uid alt_uid
-#>          <dbl>    <dbl>                       <dbl> <dbl> <dbl> <chr>  
-#>  1           1        1                           1     1     1 1      
-#>  2           1        1                           2     2     2 2      
-#>  3           1        1                           3     3     3 3      
-#>  4           1        1                           4     4     4 4      
-#>  5           1        1                           5     5     5 5      
-#>  6           1        1                           6     6     6 6      
-#>  7           1        1                           7     7     7 7      
-#>  8           1        1                           8     8     8 8      
-#>  9           1        1                           9     9     9 9      
-#> 10           1        1                          10    10    10 10     
-#> # ... with 370,588 more rows
 ```
+
+    #> # A tibble: 370,598 x 6
+    #>    groupNumber groupInd Nuclei_Number_Object_Number   cid   uid alt_uid
+    #>          <dbl>    <dbl>                       <dbl> <dbl> <dbl> <chr>  
+    #>  1           1        1                           1     1     1 1      
+    #>  2           1        1                           2     2     2 2      
+    #>  3           1        1                           3     3     3 3      
+    #>  4           1        1                           4     4     4 4      
+    #>  5           1        1                           5     5     5 5      
+    #>  6           1        1                           6     6     6 6      
+    #>  7           1        1                           7     7     7 7      
+    #>  8           1        1                           8     8     8 8      
+    #>  9           1        1                           9     9     9 9      
+    #> 10           1        1                          10    10    10 10     
+    #> # ... with 370,588 more rows
+
+### Plotting
+
+With our `uid` per cell we can now plot the tracks:
+
+``` r
+ggplot(fixed %>% filter(groupNumber == 1), 
+       aes(Nuclei_Location_Center_X, Nuclei_Location_Center_Y, 
+           group = uid, color = as.factor(uid))) + 
+  geom_path() + 
+  guides(color = F) +
+  coord_fixed()
+```
+
+<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
