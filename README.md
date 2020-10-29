@@ -10,6 +10,9 @@
 The goal of CPTrackR is to add unique track ids to CellProfiler tracking
 output.
 
+**NB:** does not work when CellProfiler connects over multiple frames
+(gap \> 1 frame)
+
 ## Installation
 
 You can install the development version of CPTrackR with:
@@ -55,10 +58,10 @@ We can create a lookup table (LUT) for a single group using
 
 ``` r
 library(CPTrackR)
-  lut <- createLUTGroup(data %>% filter(groupNumber == 1),
-                        frame_var = groupInd, 
-                        obj_var = Nuclei_Number_Object_Number,
-                        par_obj_var = Nuclei_TrackObjects_ParentObjectNumber_30) 
+lut <- createLUTGroup(data %>% filter(groupNumber == 1),
+                      frame_var = groupInd, 
+                      obj_var = Nuclei_Number_Object_Number,
+                      par_obj_var = Nuclei_TrackObjects_ParentObjectNumber_30) 
 lut %>% 
   arrange(Nuclei_Number_Object_Number, groupInd)
 #> # A tibble: 10,304 x 5
