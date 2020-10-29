@@ -73,7 +73,7 @@ groupIndList <- data %>%
       group_by({{par_obj_var}}) %>%
       mutate(alt_uid = paste(.data$alt_uid, row_number(), sep = ".")) %>% # add suffix
       ungroup() %>%
-      mutate(uid = row_number() + max(groupIndList[[i-1]]$uid)) %>% # give these cells new uids
+      mutate(uid = row_number() + max(groupIndList[[i-1]]$uid, new$uid)) %>% # give these cells new uids
       select(-{{par_obj_var}})
 
     # put together and update time frame in list
