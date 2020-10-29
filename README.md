@@ -1,21 +1,21 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# CPTraceR
+# CPTrackR
 
 <!-- badges: start -->
 
 <!-- badges: end -->
 
-The goal of CPTraceR is to add unique track ids to CellProfiler tracking
+The goal of CPTrackR is to add unique track ids to CellProfiler tracking
 output.
 
 ## Installation
 
-You can install the development version of CPTraceR with:
+You can install the development version of CPTrackR with:
 
 ``` r
-remotes::install_github("burgerga/CPTraceR")
+remotes::install_github("burgerga/CPTrackR")
 ```
 
 ## Usage
@@ -54,7 +54,7 @@ We can create a lookup table (LUT) for a single group using
 `createLUTGroup`:
 
 ``` r
-library(CPTraceR)
+library(CPTrackR)
   lut <- createLUTGroup(data %>% filter(groupNumber == 1),
                         frame_var = groupInd, 
                         obj_var = Nuclei_Number_Object_Number,

@@ -1,4 +1,4 @@
 library(testthat)
-library(CPTraceR)
+library(CPTrackR)
 
-test_check("CPTraceR")
+test_check("CPTrackR")
