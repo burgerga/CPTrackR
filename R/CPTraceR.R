@@ -32,7 +32,8 @@ NULL
 createLUTGroup <- function(data, frame_var, obj_var, par_obj_var) {
 groupIndList <- data %>%
     select({{frame_var}}, {{obj_var}}, {{par_obj_var}}) %>%
-    group_split({{frame_var}}, .keep = F) %>%
+    arrange({{frame_var}}) %>%
+    group_split({{frame_var}}) %>%
     as.list() # remove vctrs typing which doesn't allow replacing list entries with incompatible column layout
   p <- progressr::progressor(steps = length(groupIndList))
 
@@ -56,7 +57,9 @@ groupIndList <- data %>%
     # check for duplicate parent objects
     cont <- groupIndList[[i]] %>%
       filter({{par_obj_var}} != 0) %>%
-      left_join(groupIndList[[i-1]] %>% rename("{{par_obj_var}}" := {{obj_var}}),
+      left_join(groupIndList[[i-1]] %>%
+                  rename("{{par_obj_var}}" := {{obj_var}}) %>%
+                  select(-{{frame_var}}),
                 by = c(rlang::as_name(enquo(par_obj_var)))) %>%
       add_count({{par_obj_var}})
 
@@ -77,14 +80,11 @@ groupIndList <- data %>%
       select(-{{par_obj_var}})
 
     # put together and update time frame in list
-    groupIndList[[i]] <- bind_rows(new, cont_single, cont_multi) %>% arrange({{obj_var}})
+    groupIndList[[i]] <- bind_rows(new, cont_single, cont_multi) %>% arrange(.data$uid)
 
   }
 
-  bind_rows(groupIndList, .id = "groupInd") %>%
-    mutate(groupInd = as.numeric(.data$groupInd)) %>%
-    relocate(.data$groupInd)
-
+  bind_rows(groupIndList)
 }
 
 
