@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 The goal of CPTrackR is to add unique track ids to CellProfiler tracking output.
 
-**NB:** does not work when CellProfiler connects over multiple frames (gap > 1 frame)
+**NB:** No support for LAP tracking with temporal gaps (yet)
 
 ## Installation
 
