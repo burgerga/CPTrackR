@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 # CPTrackR
 
 <!-- badges: start -->
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4725472.svg)](https://doi.org/10.5281/zenodo.4725472)
 <!-- badges: end -->
 
 The goal of CPTrackR is to add unique track ids to CellProfiler tracking output.
