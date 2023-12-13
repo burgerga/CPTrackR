@@ -67,12 +67,12 @@ groupIndList <- data %>%
     # since we can just keep the values from the previous time frame)
     cont_single <- cont %>%
       filter(.data$n == 1) %>% # non-shared parent
-      select(-.data$n, -{{par_obj_var}})
+      select(-"n", -{{par_obj_var}})
 
     # now the objects that share parents
     cont_multi <- cont %>%
       filter(.data$n > 1) %>%  # shared parents
-      select(-.data$n) %>%
+      select(-"n") %>%
       group_by({{par_obj_var}}) %>%
       mutate(alt_uid = paste(.data$alt_uid, row_number(), sep = ".")) %>% # add suffix
       ungroup() %>%
