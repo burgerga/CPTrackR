@@ -36,23 +36,33 @@ remotes::install_github("burgerga/CPTrackR")
 
 ### Creating a lookup table (LUT)
 
-Assuming `data` contains some data from a CellProfiler tsv:
-
 ```{r, echo=F, message = FALSE, warning=FALSE}
 library(tidyverse)
 
 library(future)
 plan(multisession)
 
-data <-  read_tsv(file.path("~/../../Downloads","20190925_BrittData_singleCell_1hrDelay_withoutT01.txt"))
+# Example data is generated from a dataset from Britt (shared by Muriel)
+# all_data <- read_tsv(file.path("~/../../Downloads","20190925_BrittData_singleCell_1hrDelay_withoutT01.txt"))
+# data = all_data |>
+#   filter(groupNumber <= 2) |>
+#   select(groupNumber,
+#          groupInd,
+#          Nuclei_TrackObjects_ParentObjectNumber_30,
+#          Nuclei_Number_Object_Number,
+#          Nuclei_Intensity_MeanIntensity_image_green,
+#          starts_with("Nuclei_Location_Center_"))
 
 theme_set(theme_classic(base_size = 13))
 ```
 
-Show some example uncorrected data:
+Show some example uncorrected data extracted from a CellProfiler tsv:
 
 ```{r}
+library(CPTrackR)
 library(tidyverse)
+
+data <- read_tsv(system.file("extdata", "cptrackr_example_data.tsv.xz", package="CPTrackR"), show_col_types = F)
 data %>%
   select(groupNumber, 
          groupInd, 
