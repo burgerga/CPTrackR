@@ -1,6 +1,6 @@
 Package: CPTrackR
 Title: Create unique track identifiers for CellProfiler tracking output
-Version: 0.2.2
+Version: 0.2.2.9000
 Authors@R: 
     c(person(given = "Gerhard",
              family = "Burger",
