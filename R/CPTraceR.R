@@ -30,7 +30,7 @@ NULL
 #'
 #' @export
 createLUTGroup <- function(data, frame_var, obj_var, par_obj_var) {
-groupIndList <- data %>%
+  groupIndList <- data %>%
     select({{frame_var}}, {{obj_var}}, {{par_obj_var}}) %>%
     arrange({{frame_var}}) %>%
     group_split({{frame_var}}) %>%

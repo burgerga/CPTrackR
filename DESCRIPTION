@@ -1,6 +1,6 @@
 Package: CPTrackR
 Title: Create unique track identifiers for CellProfiler tracking output
-Version: 0.2.1.9000
+Version: 0.2.2
 Authors@R: 
     c(person(given = "Gerhard",
              family = "Burger",
@@ -16,13 +16,17 @@ Authors@R:
              family = "Wink", 
              role = c("aut"),
              email = "hardervidertsie@gmail.com",
-             comment = c(ORCID = "0000-0003-1189-7231")))
+             comment = c(ORCID = "0000-0003-1189-7231")),
+      person(given = "Jurjun", 
+             family = "van der Velde", 
+             role = c("ctb"),
+             comment = c(ORCID = "0000-0001-7072-837X")))
 Description: Create unique track identifiers for CellProfiler tracking output.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 Config/testthat/edition: 3
 Imports: 
     furrr,
