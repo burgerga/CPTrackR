@@ -42,6 +42,8 @@ groupIndList <- data %>%
     mutate(cid = {{obj_var}}, uid = {{obj_var}}, alt_uid= as.character(.data$cid)) %>%
     select(-{{par_obj_var}})
 
+  max_uid <- max(groupIndList[[1]]$uid)
+
   for(i in 2:length(groupIndList)) {
     p(str_glue("time {i}/{length(groupIndList)}"))
 
@@ -49,7 +51,7 @@ groupIndList <- data %>%
     new <- groupIndList[[i]] %>%
       filter({{par_obj_var}} == 0) %>%
       mutate(cid = row_number() + max(groupIndList[[i-1]]$cid),
-             uid = row_number() + max(groupIndList[[i-1]]$uid),
+             uid = row_number() + max_uid,
              alt_uid = as.character(.data$cid)) %>%
       select(-{{par_obj_var}})
 
@@ -76,11 +78,14 @@ groupIndList <- data %>%
       group_by({{par_obj_var}}) %>%
       mutate(alt_uid = paste(.data$alt_uid, row_number(), sep = ".")) %>% # add suffix
       ungroup() %>%
-      mutate(uid = row_number() + max(groupIndList[[i-1]]$uid, new$uid)) %>% # give these cells new uids
+      mutate(uid = row_number() + max(max_uid, new$uid)) %>% # give these cells new uids
       select(-{{par_obj_var}})
 
     # put together and update time frame in list
     groupIndList[[i]] <- bind_rows(new, cont_single, cont_multi) %>% arrange(.data$uid)
+
+    # update max_uid to the new max
+    max_uid <- max(max_uid, groupIndList[[i]]$uid)
 
   }
 
